@@ -1,6 +1,5 @@
 let firstOperand = '';
 let curOperation = '';
-// let allOperations = [];
 let secondOperand = '';
 let result;
 
@@ -48,11 +47,18 @@ displayCurrentEl.textContent = 0;
 function numberBtnHandler(e) {
   let value = e.target.textContent;
 
-  if(pressedEqual) {
+  if(pressedEqual && pressedOperator) {
+    console.log('ovdeeeeeeeeeeeeeeeeeeee')
     pressedOperator = false;
+    pressedEqual = false;
+    firstOperand = '';
     calculation = '';
     clearLast();
   }  
+
+  if(!pressedEqual && pressedOperator) {
+    pressedOperator = true;
+  }
 
   console.log(`OVDE GA PROMENI NESTO ${pressedOperator}`);
   if(!pressedOperator) {
@@ -72,32 +78,37 @@ function numberBtnHandler(e) {
 
   
 
-
-
-
-  
-
 }
 
 function operationBtnHandler(e) {
-  pressedOperator = !pressedOperator
-  if(pressedEqual) pressedEqual = false;
-  console.log(pressedOperator);
   curOperation = e.target.textContent;
-  // allOperations.push(e.target.textContent);
-  displayLastTwo(firstOperand, curOperation);
+  if(pressedEqual && pressedOperator) {
+    // U prvom operandu imas rezultat!!!
+    console.log('tu si macko');
+    calculation = '';
+    clearLast();
+    displayLastTwo(firstOperand, curOperation);
+    pressedOperator = true;
+    pressedEqual = false;
+    
+  }  else {
+    pressedOperator = true;
+    displayLastTwo(firstOperand, curOperation);
+  }
+  
+ 
+  
 }
 
 function equalBtnHandler(e) {
   let equalValue = e.target.textContent;
   displayLastTwo(secondOperand, equalValue);
   result = operator(curOperation, firstOperand, secondOperand);
-  firstOperand = '';
+  firstOperand = result;
   curOperation = '';
   secondOperand = '';
   displayCurrent(result);
   pressedEqual = true;
- 
 }
 
 
@@ -144,10 +155,10 @@ function displayLastTwo(operand, operation) {
   displayLastEl.textContent = calculation;
 }
 
-// function displayLastOne(operationOroperand) {
-//   calculation +=  operationOroperand + ' '
-//   displayLastEl.textContent = calculation;
-// }
+function displayLastOne(operationOroperand) {
+  calculation +=  operationOroperand + ' '
+  displayLastEl.textContent = calculation;
+}
 
 function clearLast() {
   displayLastEl.textContent = '';
