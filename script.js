@@ -1,17 +1,112 @@
-const screen = document.querySelector('.display');
-const calculator = document.querySelector('.calculator');
+let firstOperand = '';
+let curOperation = '';
+// let allOperations = [];
+let secondOperand = '';
+let result;
+
+let calculation = '';
+let pressedOperator = false;
+let pressedEqual = false;
 
 const displayLastEl = document.querySelector('.display-last');
-const displayCurrentEl = document.querySelector('.display-current')
-displayCurrentEl.textContent = 0
+const displayCurrentEl = document.querySelector('.display-current');
+
+const dotButton = document.querySelector('#dot');
+const equalButton = document.querySelector('#equal');
+const clearButton = document.querySelector('.clear');
+const deleteButton = document.querySelector('.delete');
+
+const allButtonsNodeList = document.querySelectorAll('button');
+const allButtonsArray = [...allButtonsNodeList];
+
+// Number handlers
+const numberButtons = allButtonsArray.filter((btn) => {
+  return [0, 1, 2, 3, 4, 5, 6, 7 ,8, 9].includes(+btn.textContent);
+})
+numberButtons.forEach((number) => {
+  number.addEventListener('click',numberBtnHandler.bind(null))
+})
+
+
+// Operation handlers
+const operationButtons = allButtonsArray.filter((btn) => {
+  return ['+', '-', '*', '/'].includes(btn.textContent);
+})
+operationButtons.forEach((operation) => {
+  operation.addEventListener('click',operationBtnHandler.bind(null))
+})
+
+// Operation equal handler
+equalButton.addEventListener('click', equalBtnHandler.bind(null))
+
+
+displayCurrentEl.textContent = 0;
+
+
+
+
+function numberBtnHandler(e) {
+  let value = e.target.textContent;
+
+  if(pressedEqual) {
+    pressedOperator = false;
+    calculation = '';
+    clearLast();
+  }  
+
+  console.log(`OVDE GA PROMENI NESTO ${pressedOperator}`);
+  if(!pressedOperator) {
+    firstOperand += value;
+    console.log(`FIRST OPERAND: ${firstOperand}`);
+    displayCurrent(firstOperand);
+  } else {
+    console.log('ovde');
+    secondOperand += value;
+    console.log(`SECOND OPERAND: ${secondOperand}`);
+    displayCurrent(secondOperand);
+  } 
+    
+
+
+
+
+  
+
+
+
+
+  
+
+}
+
+function operationBtnHandler(e) {
+  pressedOperator = !pressedOperator
+  if(pressedEqual) pressedEqual = false;
+  console.log(pressedOperator);
+  curOperation = e.target.textContent;
+  // allOperations.push(e.target.textContent);
+  displayLastTwo(firstOperand, curOperation);
+}
+
+function equalBtnHandler(e) {
+  let equalValue = e.target.textContent;
+  displayLastTwo(secondOperand, equalValue);
+  result = operator(curOperation, firstOperand, secondOperand);
+  firstOperand = '';
+  curOperation = '';
+  secondOperand = '';
+  displayCurrent(result);
+  pressedEqual = true;
+ 
+}
 
 
 function multiplay(num1, num2) {
-  return num1 * num2;
+  return Math.round((num1 * num2) * 10) / 10;
 }
 
 function divide(num1, num2) {
-  return num1 / num2;
+  return Math.round((num1 / num2) * 10) / 10;
 }
 
 function add(num1, num2) {
@@ -23,6 +118,8 @@ function subtract(num1, num2) {
 }
 
 function operator(sign, num1, num2) {
+  num1 = +num1;
+  num2 = +num2;
   switch(sign) {
     case '+':
       return add(num1,num2)
@@ -35,79 +132,128 @@ function operator(sign, num1, num2) {
   }
 }
 
-
-let firstOperand = '';
-let operations = '';
-let secondOperand = '';
-
-
 function displayCurrent(numberBtn) {
-  displayCurrentEl.textContent = parseInt(numberBtn);
+  console.log(`DISPLAYED: ${numberBtn}`);
+  displayCurrentEl.textContent = numberBtn['0'] === '0' ? parseInt(numberBtn) : numberBtn
 }
 
-function displayLast(firstOperand, operations) {
-  const calculation = `${firstOperand} ${operations}`;
+
+
+function displayLastTwo(operand, operation) {
+  calculation += parseInt(operand) + ' ' + operation + ' ';
   displayLastEl.textContent = calculation;
 }
 
-calculator.addEventListener('click', function(e) {
-  const target = e.target.closest('.btn-cl');
-  if(!target) return;
-  const targetTxt = target.textContent;
-  checkPressedNumber(targetTxt);
-  if(!operations) {
-    displayCurrent(firstOperand)
-  }
-  checkPressedOperator(targetTxt);
-  if(checkPressedOperator(targetTxt) === undefined) return
-  displayLast(firstOperand, operations);
-  
+// function displayLastOne(operationOroperand) {
+//   calculation +=  operationOroperand + ' '
+//   displayLastEl.textContent = calculation;
+// }
 
-})
-
-
-
-
-
-function checkPressedNumber(targetTxt) {
-  switch(targetTxt) {
-    case '0':
-      return firstOperand += 0;
-    case '1':
-      return firstOperand += 1;
-    case '2':
-      return firstOperand += 2;
-    case '3':
-      return firstOperand += 3;
-    case '4':
-      return firstOperand += 4;
-    case '5':
-      return firstOperand += 5;
-    case '6':
-      return firstOperand += 6;
-    case '7':
-      return firstOperand += 7;
-    case '8':
-      return firstOperand += 8;
-    case '9':
-      return firstOperand += 9;
-
-  }
+function clearLast() {
+  displayLastEl.textContent = '';
 }
 
-function checkPressedOperator(targetTxt) {
-  switch(targetTxt) {
-    case '+':
-      return operations = "+";
-    case '-':
-      return operations = "-";
-    case '*':
-      return operations = "*";
-    case '/':
-      return operations = "/";
-    case '=':
-      return operations = "=";
-    default:
-      return undefined;
-  }
-}
+
+// calculator.addEventListener('click', function(e) {
+//   const target = e.target.closest('.btn-cl');
+//   if(!target) return;
+//   const targetTxt = target.textContent;
+//   // if no opeartions, add first number and display it
+//   if(!operations) {
+//     checkPressedNumber(targetTxt);
+//     displayCurrent(firstOperand)
+//   }
+
+
+//   // check for operation and display to last
+//   checkPressedOperator(targetTxt);
+//   displayLast(firstOperand, operations);
+
+//   console.log(operations)
+
+
+//   // Chek second operand
+//   if(checkPressedOperator(targetTxt) === undefined && operations) {
+//     checkPressedNumber2(targetTxt)
+//     displayCurrent(secondOperand);
+//   }
+
+// })
+
+// equalBtn.addEventListener('click', function(e) {
+//   console.log(operator(operations, firstOperand, secondOperand));
+// })
+
+
+
+
+
+// function checkPressedNumber(targetTxt) {
+//   switch(targetTxt) {
+//     case '0':
+//       return firstOperand += 0;
+//     case '1':
+//       return firstOperand += 1;
+//     case '2':
+//       return firstOperand += 2;
+//     case '3':
+//       return firstOperand += 3;
+//     case '4':
+//       return firstOperand += 4;
+//     case '5':
+//       return firstOperand += 5;
+//     case '6':
+//       return firstOperand += 6;
+//     case '7':
+//       return firstOperand += 7;
+//     case '8':
+//       return firstOperand += 8;
+//     case '9':
+//       return firstOperand += 9;
+
+//   }
+// }
+
+// function checkPressedNumber2(targetTxt) {
+//   switch(targetTxt) {
+//     case '0':
+//       console.log('OVDE')
+//       return secondOperand += 0;
+//     case '1':
+//       return secondOperand += 1;
+//     case '2':
+//       return secondOperand += 2;
+//     case '3':
+//       return secondOperand += 3;
+//     case '4':
+//       return secondOperand += 4;
+//     case '5':
+//       return secondOperand += 5;
+//     case '6':
+//       return secondOperand += 6;
+//     case '7':
+//       return secondOperand += 7;
+//     case '8':
+//       return secondOperand += 8;
+//     case '9':
+//       return secondOperand += 9;
+
+//   }
+// }
+
+// function checkPressedOperator(targetTxt) {
+//   switch(targetTxt) {
+//     case '+':
+//       return operations = "+";
+//     case '-':
+//       return operations = "-";
+//     case '*':
+//       return operations = "*";
+//     case '/':
+//       return operations = "/";
+//     // case '=':
+//     //   return operations = "=";
+//     default:
+//       return undefined;
+//   }
+// }
