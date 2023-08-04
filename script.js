@@ -180,6 +180,8 @@ function operationBtnHandler(e) {
 }
 
 function equalBtnHandler(e) {
+  
+
   let equalValue = e.target.textContent;
   displayLastTwo(secondOperand, equalValue);
   result = operator(curOperation, firstOperand, secondOperand);
