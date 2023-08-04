@@ -8,6 +8,8 @@ let pressedOperator = false;
 let doublepressedOperator = false;
 let pressedEqual = false;
 
+let isEmpty = true;
+
 // Selecting Node elements
 const displayLastEl = document.querySelector('.display-last');
 const displayCurrentEl = document.querySelector('.display-current');
@@ -44,6 +46,8 @@ equalButton.addEventListener('click', equalBtnHandler.bind(null))
 
 // Operation clear handler
 clearButton.addEventListener('click', () => {
+  isEmpty = true;
+  console.log(isEmpty);
   displayCurrentEl.textContent = 0;
   firstOperand = '';
   curOperation = '';
@@ -103,6 +107,7 @@ displayCurrentEl.textContent = 0;
 
 
 function numberBtnHandler(e) {
+  isEmpty = false;
   let value = e.target.textContent;
 
   if(pressedEqual && pressedOperator) {
@@ -143,7 +148,7 @@ function numberBtnHandler(e) {
 }
 
 function operationBtnHandler(e) {
-  
+  isEmpty = false;
   if(pressedEqual && pressedOperator) {
     curOperation = e.target.textContent;
     // U prvom operandu imas rezultat!!!
@@ -180,7 +185,9 @@ function operationBtnHandler(e) {
 }
 
 function equalBtnHandler(e) {
-  
+  if(isEmpty) {
+    return;
+  }
 
   let equalValue = e.target.textContent;
   displayLastTwo(secondOperand, equalValue);
