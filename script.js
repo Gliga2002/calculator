@@ -1,7 +1,8 @@
 // TODO: Izbaca mi dosta onih brojeva
-// DELETE button
-// Deljenje sa nulom
+// Textcontent sa 0 razmisli da li ces da ga izbrises
+// DELETE button!!!
 // sa tackom .
+// 
 
 let firstOperand = '';
 let curOperation = '';
@@ -53,7 +54,7 @@ equalButton.addEventListener('click', equalBtnHandler.bind(null))
 clearButton.addEventListener('click', () => {
   isEmpty = true;
   console.log(isEmpty);
-  displayCurrentEl.textContent = 0;
+  // displayCurrentEl.textContent = 0;
   firstOperand = '';
   curOperation = '';
   secondOperand = '';
@@ -63,6 +64,7 @@ clearButton.addEventListener('click', () => {
   result = '';
   calculation = '';
   clearLast();
+  clearCurr();
 })
 
 // Operation delete handler
@@ -108,7 +110,7 @@ deleteButton.addEventListener('click', () => {
 
 })
 
-displayCurrentEl.textContent = 0;
+// displayCurrentEl.textContent = 0;
 
 
 
@@ -159,7 +161,7 @@ function operationBtnHandler(e) {
   if(!firstOperand) {
     isEmpty = true;
     console.log(isEmpty);
-    displayCurrentEl.textContent = 0;
+    // displayCurrentEl.textContent = 0;
     firstOperand = '';
     curOperation = '';
     secondOperand = '';
@@ -224,7 +226,7 @@ function equalBtnHandler(e) {
   } else {
     isEmpty = true;
     console.log(isEmpty);
-    displayCurrentEl.textContent = 0;
+    // displayCurrentEl.textContent = 0;
     firstOperand = '';
     curOperation = '';
     secondOperand = '';
@@ -238,6 +240,8 @@ function equalBtnHandler(e) {
   }
   
 }
+
+
 
 
 function multiplay(num1, num2) {
@@ -302,6 +306,9 @@ function clearLast() {
   displayLastEl.textContent = '';
 }
 
+function clearCurr() {
+  displayCurrentEl.textContent = '';
+};
 
 // calculator.addEventListener('click', function(e) {
 //   const target = e.target.closest('.btn-cl');
