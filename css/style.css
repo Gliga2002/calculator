@@ -12,7 +12,7 @@ main {
 
 .display {
   background-color: #eee;
-  padding:6rem 1rem;
+  padding:2rem;
   border: 2px solid #333;
   border-radius: 0.5rem;
 }
@@ -40,4 +40,16 @@ main {
   border-radius:0.5rem;
   background-color: #eee;
   font-size: 20px
+}
+
+.display-last {
+  font-size:2rem;
+  min-height: 3.2rem;
+  text-align: right;
+}
+
+.display-current {
+  font-size: 4rem;
+  min-height: 6.2rem;
+  text-align: right;
 }
