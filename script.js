@@ -5,10 +5,14 @@ let result;
 
 let calculation = '';
 let pressedOperator = false;
+let doublepressedOperator = false;
 let pressedEqual = false;
 
+// Selecting Node elements
 const displayLastEl = document.querySelector('.display-last');
 const displayCurrentEl = document.querySelector('.display-current');
+
+const audio = document.querySelector('audio');
 
 const dotButton = document.querySelector('#dot');
 const equalButton = document.querySelector('#equal');
@@ -17,7 +21,7 @@ const deleteButton = document.querySelector('.delete');
 
 const allButtonsNodeList = document.querySelectorAll('button');
 const allButtonsArray = [...allButtonsNodeList];
-
+////////////////////////////////////////////////////////////////////////////////////////
 // Number handlers
 const numberButtons = allButtonsArray.filter((btn) => {
   return [0, 1, 2, 3, 4, 5, 6, 7 ,8, 9].includes(+btn.textContent);
@@ -38,6 +42,60 @@ operationButtons.forEach((operation) => {
 // Operation equal handler
 equalButton.addEventListener('click', equalBtnHandler.bind(null))
 
+// Operation clear handler
+clearButton.addEventListener('click', () => {
+  displayCurrentEl.textContent = 0;
+  firstOperand = '';
+  curOperation = '';
+  secondOperand = '';
+  pressedOperator = false;
+  doublepressedOperator = false;
+  pressedEqual = false;
+  result = '';
+  calculation = '';
+  clearLast();
+})
+
+// Operation delete handler
+deleteButton.addEventListener('click', () => {
+
+    if(pressedEqual) {
+      const convertToString = firstOperand + '';
+      firstOperand = convertToString.slice(0, -1);
+      console.log(`FIRST OPERAND DELETE ${firstOperand}`)
+      if(firstOperand.length >= 1) {
+        displayCurrent(firstOperand);
+      } else {
+        audio.currentTime = 0;
+        audio.play();
+        // alert('You cant delete more')
+      }
+    }
+  
+    if(!pressedOperator) {
+      firstOperand = firstOperand.slice(0, -1);
+    console.log(`FIRST OPERAND DELETE ${firstOperand}`)
+    if(firstOperand.length >= 1) {
+      displayCurrent(firstOperand);
+    } else {
+      audio.currentTime = 0;
+      audio.play();
+      // alert('You cant delete more')
+    }
+    }
+    
+  
+    if(pressedOperator) {
+      secondOperand = secondOperand.slice(0, -1);
+      console.log(`SECOND OPERAND DELETE ${secondOperand}`)
+      if(secondOperand.length >= 1) {
+        displayCurrent(secondOperand);
+      } 
+    }
+   
+    
+
+})
 
 displayCurrentEl.textContent = 0;
 
@@ -57,6 +115,10 @@ function numberBtnHandler(e) {
   }  
 
   if(!pressedEqual && pressedOperator) {
+    pressedOperator = true;
+  }
+
+  if(doublepressedOperator) {
     pressedOperator = true;
   }
 
@@ -81,8 +143,9 @@ function numberBtnHandler(e) {
 }
 
 function operationBtnHandler(e) {
-  curOperation = e.target.textContent;
+  
   if(pressedEqual && pressedOperator) {
+    curOperation = e.target.textContent;
     // U prvom operandu imas rezultat!!!
     console.log('tu si macko');
     calculation = '';
@@ -91,7 +154,23 @@ function operationBtnHandler(e) {
     pressedOperator = true;
     pressedEqual = false;
     
-  }  else {
+  }  else if(!pressedEqual && pressedOperator) {
+    nextOperation = e.target.textContent;
+    doublepressedOperator = true;
+    result = operator(curOperation, firstOperand, secondOperand);
+    firstOperand = result;
+    curOperation = nextOperation;
+    secondOperand = '';
+    calculation = '';
+    clearLast();
+    displayCurrent(result);
+    displayLastTwo(firstOperand, nextOperation);
+    
+  }
+
+  
+  else {
+    curOperation = e.target.textContent;
     pressedOperator = true;
     displayLastTwo(firstOperand, curOperation);
   }
