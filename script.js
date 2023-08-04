@@ -1,3 +1,8 @@
+// TODO: Izbaca mi dosta onih brojeva
+// DELETE button
+// Deljenje sa nulom
+// sa tackom .
+
 let firstOperand = '';
 let curOperation = '';
 let secondOperand = '';
@@ -82,8 +87,7 @@ deleteButton.addEventListener('click', () => {
     if(firstOperand.length >= 1) {
       displayCurrent(firstOperand);
     } else {
-      audio.currentTime = 0;
-      audio.play();
+      
       // alert('You cant delete more')
     }
     }
@@ -94,7 +98,10 @@ deleteButton.addEventListener('click', () => {
       console.log(`SECOND OPERAND DELETE ${secondOperand}`)
       if(secondOperand.length >= 1) {
         displayCurrent(secondOperand);
-      } 
+      } else {
+        audio.currentTime = 0;
+        audio.play();
+      }
     }
    
     
@@ -149,6 +156,22 @@ function numberBtnHandler(e) {
 
 function operationBtnHandler(e) {
   isEmpty = false;
+  if(!firstOperand) {
+    isEmpty = true;
+    console.log(isEmpty);
+    displayCurrentEl.textContent = 0;
+    firstOperand = '';
+    curOperation = '';
+    secondOperand = '';
+    pressedOperator = false;
+    doublepressedOperator = false;
+    pressedEqual = false;
+    result = '';
+    calculation = '';
+    clearLast();
+    alert('Please first select first opeand before you select operator!')
+    return;
+  }
   if(pressedEqual && pressedOperator) {
     curOperation = e.target.textContent;
     // U prvom operandu imas rezultat!!!
@@ -192,11 +215,28 @@ function equalBtnHandler(e) {
   let equalValue = e.target.textContent;
   displayLastTwo(secondOperand, equalValue);
   result = operator(curOperation, firstOperand, secondOperand);
-  firstOperand = result;
-  curOperation = '';
-  secondOperand = '';
-  displayCurrent(result);
-  pressedEqual = true;
+  if(result) {
+    firstOperand = result;
+    curOperation = '';
+    secondOperand = '';
+    displayCurrent(result);
+    pressedEqual = true;
+  } else {
+    isEmpty = true;
+    console.log(isEmpty);
+    displayCurrentEl.textContent = 0;
+    firstOperand = '';
+    curOperation = '';
+    secondOperand = '';
+    pressedOperator = false;
+    doublepressedOperator = false;
+    pressedEqual = false;
+    result = '';
+    calculation = '';
+    clearLast();
+    displayCurrentError();
+  }
+  
 }
 
 
@@ -205,7 +245,12 @@ function multiplay(num1, num2) {
 }
 
 function divide(num1, num2) {
-  return Math.round((num1 / num2) * 10) / 10;
+  if(num2 === 0) {
+    alert('Cannot divide by 0!');
+    return undefined
+  }
+  else return Math.round((num1 / num2) * 10) / 10;
+ 
 }
 
 function add(num1, num2) {
@@ -234,6 +279,11 @@ function operator(sign, num1, num2) {
 function displayCurrent(numberBtn) {
   console.log(`DISPLAYED: ${numberBtn}`);
   displayCurrentEl.textContent = numberBtn['0'] === '0' ? parseInt(numberBtn) : numberBtn
+}
+
+function displayCurrentError() {
+  
+  displayCurrentEl.textContent = 'Cannot divide by zero!'
 }
 
 
