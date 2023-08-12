@@ -53,3 +53,7 @@ main {
   min-height: 6.2rem;
   text-align: right;
 }
+
+.opacity {
+  opacity: 0.5;
+}

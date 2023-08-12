@@ -6,8 +6,7 @@ let result;
 let calculation = "";
 let pressedOperator = false;
 let pressedEqual = false;
-
-
+let divideByZero = false;
 
 
 // Selecting Node elements
@@ -56,15 +55,19 @@ clearButton.addEventListener("click", clearBtnHandler);
 deleteButton.addEventListener("click", deleteBtnHandler);
 
 
+
+// Btn Handlers
+
 function numberBtnHandler(e) {
+  resetAfterDivisionByZero();
   let value = e.target.textContent;
   concatOperandAndDisplay(value);
 
 }
 
 
-
 function operationBtnHandler(e) {
+
   if(curOperation !== '' && firstOperand && secondOperand === "" && pressedEqual === false) {
     calculation = "";
     curOperation = e.target.textContent;
@@ -76,8 +79,8 @@ function operationBtnHandler(e) {
     displayLastTwo(firstOperand, curOperation);
     pressedOperator = true;
   } else  if(curOperation !== "") {
-    console.log('ili ovdeeeeeeeeeeeee')
     let nextOperation = e.target.textContent;
+    if(!checkDivisionByZero(secondOperand,curOperation)) return;
     const result = parseFloat(operator(curOperation, firstOperand, secondOperand));
     displayCurrent(result);
    
@@ -95,9 +98,19 @@ function operationBtnHandler(e) {
 }
 
 function equalBtnHandler(e) {
+  resetAfterDivisionByZero();
+  manipulateClass(false);
+
   let equal = e.target.textContent;
+  //Check division with 0
+
+  if(!checkDivisionByZero(secondOperand, curOperation)) return;
+
   if(!displayLastTwo(secondOperand,equal)) return;
+
   const result = parseFloat(operator(curOperation, firstOperand, secondOperand));
+  console.log(result);
+  if(!result) setInitValue();
   displayCurrent(result);
  
   firstOperand = result;
@@ -110,11 +123,13 @@ function equalBtnHandler(e) {
 }
 
 function clearBtnHandler() {
+  manipulateClass(false);
   setInitValue();
   displayCurrent(firstOperand);
 }
 
 function deleteBtnHandler() {
+  if(divideByZero) return;
   let currentValue = displayCurrentEl.textContent;
   firstOperand = String(firstOperand);
   secondOperand = String(secondOperand);
@@ -123,22 +138,143 @@ function deleteBtnHandler() {
   if(currentValue === secondOperand) deleteOneNumber(false);
 }
 
+
+
+
+
+
+function concatOperandAndDisplay(value) {
+  if(!pressedOperator) {
+    firstOperand = parseFloat(firstOperand + value);
+    displayCurrent(firstOperand);
+  } else if(pressedOperator) {
+    secondOperand = parseFloat(secondOperand + value);
+    displayCurrent(secondOperand);
+  }
+}
+
+
+function setInitValue() {
+  firstOperand = "0";
+  curOperation = "";
+  secondOperand = "";
+  pressedOperator = false;
+  pressedEqual = false;
+  result = "";
+  calculation = "";
+  clearLast();
+  clearCurr();
+}
+
+// Delete Button handler
+
+function deleteOneNumber(operand) {
+  console.log(operand ? firstOperand.length : secondOperand.length);
+  if(operand ? firstOperand.length > 1 : secondOperand.length > 1) {
+    if(operand) {
+      firstOperand = firstOperand.slice(0, -1);
+    } else {
+      secondOperand = secondOperand.slice(0, -1);
+    }
+    displayCurrent(operand ? firstOperand : secondOperand);
+  } else if(operand ? firstOperand.length === 1 : secondOperand.length === 1) {
+    audio.currentTime = 0;
+    audio.play();
+    if(operand) {
+      firstOperand = '0';
+    } else {
+      secondOperand = '0';
+    }
+    displayCurrent(operand ? firstOperand : secondOperand);
+  }
+}
+
+// Divison by Zero
+
+function checkDivisionByZero(secondOperand, curOperation) {
+  if(secondOperand === 0 && curOperation === '/') {
+    setInitValue();
+    displayCurrentError();
+    divideByZero = true;
+    manipulateClass(true);
+    return;
+  } else {
+    return true;
+  }
+}
+
+function resetAfterDivisionByZero() {
+  if(divideByZero) {
+    setInitValue();
+    displayCurrent(firstOperand);
+    manipulateClass(false);
+    divideByZero = false;
+  }
+}
+
+function manipulateClass(toggle) {
+  if(toggle) {
+    operationButtons.forEach((operation) => {
+      operation.classList.add('opacity');
+      operation.setAttribute('disabled','true');
+    });
+    equalButton.classList.add('opacity');
+    equalButton.setAttribute('disabled','true');
+  } else {
+    operationButtons.forEach((operation) => {
+      operation.classList.remove('opacity');
+      operation.removeAttribute('disabled');
+    });
+    equalButton.classList.remove('opacity');
+    equalButton.removeAttribute('disabled');
+  }
+ 
+}
+
+// Displaying
+
+function displayCurrentError() {
+  displayCurrentEl.textContent = "Cannot divide by zero!";
+}
+
+
+function displayCurrent(numberBtn) {
+  console.log(`DISPLAYED: ${typeof numberBtn} ${numberBtn}`);
+  displayCurrentEl.textContent = numberBtn;
+}
+
+function displayLastTwo(operand, operation) {
+  console.log(operand, operation);
+  if(!operand  || !operation) return;
+  calculation += operand + " " + operation + " ";
+  console.log(calculation)
+  displayLastEl.textContent = calculation;
+  return true;
+}
+
+
+
+function clearLast() {
+  displayLastEl.textContent = "";
+}
+
+function clearCurr() {
+  displayCurrentEl.textContent = "";
+}
+
+
+// Calculator logic
+
 function multiplay(num1, num2) {
   const multiplication = num1 * num2;
   return multiplication.toFixed(3);
 }
 
 function divide(num1, num2) {
-  // console.log(num1, num2);
-  // if (parseFloat(num2) === "0") {
-  //   alert("Cannot div ide by 0!");
-  //   return undefined;
-  // } else {
     const division = num1 / num2;
-    console.log(division);
     return division.toFixed(3);
-  // }
 }
+
 
 function add(num1, num2) {
   return num1 + num2;
@@ -162,79 +298,3 @@ function operator(sign, num1, num2) {
       return divide(num1, num2);
   }
 }
-
-
-
-// function displayCurrentError() {
-//   displayCurrentEl.textContent = "Cannot divide by zero!";
-// }
-function displayCurrent(numberBtn) {
-  console.log(`DISPLAYED: ${typeof numberBtn} ${numberBtn}`);
-  displayCurrentEl.textContent = numberBtn;
-}
-
-function displayLastTwo(operand, operation) {
-  if(!operand || !operation) return;
-  calculation += operand + " " + operation + " ";
-  console.log(calculation)
-  displayLastEl.textContent = calculation;
-  return true;
-}
-
-// function displayLastOne(operationOroperand) {
-//   calculation += operationOroperand + " ";
-//   displayLastEl.textContent = calculation;
-// }
-
-function clearLast() {
-  displayLastEl.textContent = "";
-}
-
-function clearCurr() {
-  displayCurrentEl.textContent = "";
-}
-
-function concatOperandAndDisplay(value) {
-  if(!pressedOperator) {
-    firstOperand = parseFloat(firstOperand + value);
-    displayCurrent(firstOperand);
-  } else if(pressedOperator) {
-    secondOperand = parseFloat(secondOperand + value);
-    displayCurrent(secondOperand);
-  }
-}
-
-function setInitValue() {
-  firstOperand = "0";
-  curOperation = "";
-  secondOperand = "";
-  pressedOperator = false;
-  pressedEqual = false;
-  result = "";
-  calculation = "";
-  clearLast();
-  clearCurr();
-}
-
-function deleteOneNumber(operand) {
-
-  console.log(operand ? firstOperand.length : secondOperand.length);
-  if(operand ? firstOperand.length > 1 : secondOperand.length > 1) {
-    if(operand) {
-      firstOperand = firstOperand.slice(0, -1);
-    } else {
-      secondOperand = secondOperand.slice(0, -1);
-    }
-    displayCurrent(operand ? firstOperand : secondOperand);
-  } else if(operand ? firstOperand.length === 1 : secondOperand.length === 1) {
-    audio.currentTime = 0;
-    audio.play();
-    if(operand) {
-      firstOperand = '0';
-    } else {
-      secondOperand = '0';
-    }
-    displayCurrent(operand ? firstOperand : secondOperand);
-  }
-}
-
