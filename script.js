@@ -271,7 +271,7 @@ function displayCurrent(numberBtn) {
 
 function displayLastTwo(operand, operation) {
   console.log(operand, operation);
-  if(!operand  || !operation) return;
+  if(operand === ''  || !operation) return;
   calculation += operand + " " + operation + " ";
   console.log(calculation)
   displayLastEl.textContent = calculation;
