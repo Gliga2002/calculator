@@ -1,20 +1,13 @@
-// TODO: Izbaca mi dosta onih brojeva
-// Textcontent sa 0 razmisli da li ces da ga izbrises
-// DELETE button!!!
-// sa tackom .
-//
-
-let firstOperand = "";
+let firstOperand = "0";
 let curOperation = "";
 let secondOperand = "";
 let result;
 
 let calculation = "";
 let pressedOperator = false;
-let doublepressedOperator = false;
+let doublePresedOperator = false;
 let pressedEqual = false;
 
-let isEmpty = true;
 
 // Selecting Node elements
 const displayLastEl = document.querySelector(".display-last");
@@ -51,169 +44,91 @@ equalButton.addEventListener("click", equalBtnHandler.bind(null));
 
 // Operation clear handler
 clearButton.addEventListener("click", () => {
-  isEmpty = true;
-  console.log(isEmpty);
-  // displayCurrentEl.textContent = 0;
-  firstOperand = "";
-  curOperation = "";
-  secondOperand = "";
-  pressedOperator = false;
-  doublepressedOperator = false;
-  pressedEqual = false;
-  result = "";
-  calculation = "";
-  clearLast();
-  clearCurr();
+
 });
 
 // Operation delete handler
-deleteButton.addEventListener("click", () => {
-  if (pressedEqual) {
-    const convertToString = firstOperand + "";
-    firstOperand = convertToString.slice(0, -1);
-    console.log(`FIRST OPERAND DELETE ${firstOperand}`);
-    if (firstOperand.length >= 1) {
-      displayCurrent(firstOperand);
-    } else {
-      audio.currentTime = 0;
-      audio.play();
-      // alert('You cant delete more')
-    }
-  }
+// deleteButton.addEventListener("click", () => {
+  
+// })
 
-  if (!pressedOperator) {
-    firstOperand = firstOperand.slice(0, -1);
-    console.log(`FIRST OPERAND DELETE ${firstOperand}`);
-    if (firstOperand.length >= 1) {
-      displayCurrent(firstOperand);
-    } else {
-      // alert('You cant delete more')
-    }
-  }
 
-  if (pressedOperator) {
-    secondOperand = secondOperand.slice(0, -1);
-    console.log(`SECOND OPERAND DELETE ${secondOperand}`);
-    if (secondOperand.length >= 1) {
-      displayCurrent(secondOperand);
-    } else {
-      audio.currentTime = 0;
-      audio.play();
-    }
-  }
-});
+// IIFE
+(function() {
+  displayCurrent(firstOperand);
+})()
 
-// displayCurrentEl.textContent = 0;
+
 
 function numberBtnHandler(e) {
-  isEmpty = false;
   let value = e.target.textContent;
+  concatOperandAndDisplay(value);
+  // if(pressedEqual) {
+  //   firstOperand = parseFloat(value);
+  //   curOperation = '';
+  //   secondOperand = '';
+  //   calculation = '';
+  //   pressedEqual = false;
+  //   pressedOperator = false;
+  //   clearLast();
+  // }
 
-  if (pressedEqual && pressedOperator) {
-    console.log("ovdeeeeeeeeeeeeeeeeeeee");
-    pressedOperator = false;
-    pressedEqual = false;
-    firstOperand = "";
-    calculation = "";
-    clearLast();
-  }
 
-  if (!pressedEqual && pressedOperator) {
-    pressedOperator = true;
-  }
-
-  if (doublepressedOperator) {
-    pressedOperator = true;
-  }
-
-  console.log(`OVDE GA PROMENI NESTO ${pressedOperator}`);
-  if (!pressedOperator) {
-    firstOperand += value;
-    console.log(`FIRST OPERAND: ${firstOperand}`);
-    displayCurrent(firstOperand);
-  } else {
-    console.log("ovde");
-    secondOperand += value;
-    console.log(`SECOND OPERAND: ${secondOperand}`);
-    displayCurrent(secondOperand);
-  }
 }
 
+
+
 function operationBtnHandler(e) {
-  isEmpty = false;
-  if (!firstOperand) {
-    isEmpty = true;
-    console.log(isEmpty);
-    // displayCurrentEl.textContent = 0;
-    firstOperand = "";
-    curOperation = "";
-    secondOperand = "";
-    pressedOperator = false;
-    doublepressedOperator = false;
-    pressedEqual = false;
-    result = "";
+
+  if(curOperation !== '' && firstOperand && secondOperand === "" && pressedEqual === false) {
     calculation = "";
-    clearLast();
-    alert("Please first select first opeand before you select operator!");
-    return;
-  }
-  if (pressedEqual && pressedOperator) {
     curOperation = e.target.textContent;
-    // U prvom operandu imas rezultat!!!
-    console.log("tu si macko");
-    calculation = "";
-    clearLast();
-    console.log(`E ovde ti resultat ${firstOperand}`);
     displayLastTwo(firstOperand, curOperation);
     pressedOperator = true;
-    pressedEqual = false;
-  } else if (!pressedEqual && pressedOperator) {
-    nextOperation = e.target.textContent;
-    doublepressedOperator = true;
-    result = operator(curOperation, firstOperand, secondOperand);
+  } else if(curOperation === '') {
+    console.log('tu')
+    curOperation = e.target.textContent;
+    displayLastTwo(firstOperand, curOperation);
+    pressedOperator = true;
+  } else  if(curOperation !== "") {
+    console.log('ili ovdeeeeeeeeeeeee')
+    let nextOperation = e.target.textContent;
+    const result = parseFloat(operator(curOperation, firstOperand, secondOperand));
+    displayCurrent(result);
+   
     firstOperand = result;
     curOperation = nextOperation;
-    secondOperand = "";
-    calculation = "";
-    clearLast();
-    displayCurrent(result);
-    displayLastTwo(firstOperand, nextOperation);
-  } else {
-    curOperation = e.target.textContent;
-    pressedOperator = true;
+    secondOperand = '';
+    calculation = '';
     displayLastTwo(firstOperand, curOperation);
+
+    pressedEqual = false;
+    pressedOperator = true;
   }
+
+ 
+  
+
+ 
+  
+
+  
+
 }
 
 function equalBtnHandler(e) {
-  if (isEmpty) {
-    return;
-  }
+  let equal = e.target.textContent;
+  if(!displayLastTwo(secondOperand,equal)) return;
+  const result = parseFloat(operator(curOperation, firstOperand, secondOperand));
+  displayCurrent(result);
+ 
+  firstOperand = result;
+  curOperation = '';
+  secondOperand = '';
+  calculation = '';
+  pressedEqual = true;
 
-  let equalValue = e.target.textContent;
-  displayLastTwo(secondOperand, equalValue);
-  result = operator(curOperation, firstOperand, secondOperand);
-  if (result) {
-    firstOperand = parseFloat(result);
-    curOperation = "";
-    secondOperand = "";
-    displayCurrent(result);
-    pressedEqual = true;
-  } else {
-    isEmpty = true;
-    console.log(isEmpty);
-    // displayCurrentEl.textContent = 0;
-    firstOperand = "";
-    curOperation = "";
-    secondOperand = "";
-    pressedOperator = false;
-    doublepressedOperator = false;
-    pressedEqual = false;
-    result = "";
-    calculation = "";
-    clearLast();
-    displayCurrentError();
-  }
+
 }
 
 function multiplay(num1, num2) {
@@ -222,15 +137,15 @@ function multiplay(num1, num2) {
 }
 
 function divide(num1, num2) {
-  console.log(num1, num2);
-  if (parseFloat(num2) === "0") {
-    alert("Cannot div ide by 0!");
-    return undefined;
-  } else {
+  // console.log(num1, num2);
+  // if (parseFloat(num2) === "0") {
+  //   alert("Cannot div ide by 0!");
+  //   return undefined;
+  // } else {
     const division = num1 / num2;
     console.log(division);
     return division.toFixed(3);
-  }
+  // }
 }
 
 function add(num1, num2) {
@@ -257,126 +172,41 @@ function operator(sign, num1, num2) {
 }
 
 function displayCurrent(numberBtn) {
-  console.log(`DISPLAYED: ${numberBtn}`);
-  displayCurrentEl.textContent = parseFloat(numberBtn);
+  console.log(`DISPLAYED: ${typeof numberBtn} ${numberBtn}`);
+  displayCurrentEl.textContent = numberBtn;
 }
 
-function displayCurrentError() {
-  displayCurrentEl.textContent = "Cannot divide by zero!";
-}
+// function displayCurrentError() {
+//   displayCurrentEl.textContent = "Cannot divide by zero!";
+// }
 
 function displayLastTwo(operand, operation) {
-  calculation += parseFloat(operand) + " " + operation + " ";
+  if(!operand || !operation) return;
+  calculation += operand + " " + operation + " ";
   displayLastEl.textContent = calculation;
+  return true;
 }
 
-function displayLastOne(operationOroperand) {
-  calculation += operationOroperand + " ";
-  displayLastEl.textContent = calculation;
-}
+// function displayLastOne(operationOroperand) {
+//   calculation += operationOroperand + " ";
+//   displayLastEl.textContent = calculation;
+// }
 
 function clearLast() {
   displayLastEl.textContent = "";
 }
 
-function clearCurr() {
-  displayCurrentEl.textContent = "";
+// function clearCurr() {
+//   displayCurrentEl.textContent = "";
+// }
+
+function concatOperandAndDisplay(value) {
+  if(!pressedOperator) {
+    firstOperand = parseFloat(firstOperand + value);
+    displayCurrent(firstOperand);
+  } else if(pressedOperator) {
+    secondOperand = parseFloat(secondOperand + value);
+    displayCurrent(secondOperand);
+  }
 }
 
-// calculator.addEventListener('click', function(e) {
-//   const target = e.target.closest('.btn-cl');
-//   if(!target) return;
-//   const targetTxt = target.textContent;
-//   // if no opeartions, add first number and display it
-//   if(!operations) {
-//     checkPressedNumber(targetTxt);
-//     displayCurrent(firstOperand)
-//   }
-
-//   // check for operation and display to last
-//   checkPressedOperator(targetTxt);
-//   displayLast(firstOperand, operations);
-
-//   console.log(operations)
-
-//   // Chek second operand
-//   if(checkPressedOperator(targetTxt) === undefined && operations) {
-//     checkPressedNumber2(targetTxt)
-//     displayCurrent(secondOperand);
-//   }
-
-// })
-
-// equalBtn.addEventListener('click', function(e) {
-//   console.log(operator(operations, firstOperand, secondOperand));
-// })
-
-// function checkPressedNumber(targetTxt) {
-//   switch(targetTxt) {
-//     case '0':
-//       return firstOperand += 0;
-//     case '1':
-//       return firstOperand += 1;
-//     case '2':
-//       return firstOperand += 2;
-//     case '3':
-//       return firstOperand += 3;
-//     case '4':
-//       return firstOperand += 4;
-//     case '5':
-//       return firstOperand += 5;
-//     case '6':
-//       return firstOperand += 6;
-//     case '7':
-//       return firstOperand += 7;
-//     case '8':
-//       return firstOperand += 8;
-//     case '9':
-//       return firstOperand += 9;
-
-//   }
-// }
-
-// function checkPressedNumber2(targetTxt) {
-//   switch(targetTxt) {
-//     case '0':
-//       console.log('OVDE')
-//       return secondOperand += 0;
-//     case '1':
-//       return secondOperand += 1;
-//     case '2':
-//       return secondOperand += 2;
-//     case '3':
-//       return secondOperand += 3;
-//     case '4':
-//       return secondOperand += 4;
-//     case '5':
-//       return secondOperand += 5;
-//     case '6':
-//       return secondOperand += 6;
-//     case '7':
-//       return secondOperand += 7;
-//     case '8':
-//       return secondOperand += 8;
-//     case '9':
-//       return secondOperand += 9;
-
-//   }
-// }
-
-// function checkPressedOperator(targetTxt) {
-//   switch(targetTxt) {
-//     case '+':
-//       return operations = "+";
-//     case '-':
-//       return operations = "-";
-//     case '*':
-//       return operations = "*";
-//     case '/':
-//       return operations = "/";
-//     // case '=':
-//     //   return operations = "=";
-//     default:
-//       return undefined;
-//   }
-// }
