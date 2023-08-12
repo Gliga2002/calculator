@@ -5,13 +5,20 @@ let result;
 
 let calculation = "";
 let pressedOperator = false;
-let doublePresedOperator = false;
 let pressedEqual = false;
+
+
 
 
 // Selecting Node elements
 const displayLastEl = document.querySelector(".display-last");
 const displayCurrentEl = document.querySelector(".display-current");
+
+// IIFE
+(function() {
+  displayCurrent(firstOperand);
+})()
+
 
 const audio = document.querySelector("audio");
 
@@ -23,7 +30,7 @@ const deleteButton = document.querySelector(".delete");
 const allButtonsNodeList = document.querySelectorAll("button");
 const allButtonsArray = [...allButtonsNodeList];
 ////////////////////////////////////////////////////////////////////////////////////////
-// Number handlers
+// Number 
 const numberButtons = allButtonsArray.filter((btn) => {
   return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].includes(+btn.textContent);
 });
@@ -31,7 +38,7 @@ numberButtons.forEach((number) => {
   number.addEventListener("click", numberBtnHandler.bind(null));
 });
 
-// Operation handlers
+// Operation 
 const operationButtons = allButtonsArray.filter((btn) => {
   return ["+", "-", "*", "/"].includes(btn.textContent);
 });
@@ -39,47 +46,25 @@ operationButtons.forEach((operation) => {
   operation.addEventListener("click", operationBtnHandler.bind(null));
 });
 
-// Operation equal handler
+// Equal 
 equalButton.addEventListener("click", equalBtnHandler.bind(null));
 
-// Operation clear handler
-clearButton.addEventListener("click", () => {
+// Clear
+clearButton.addEventListener("click", clearBtnHandler);
 
-});
-
-// Operation delete handler
-// deleteButton.addEventListener("click", () => {
-  
-// })
-
-
-// IIFE
-(function() {
-  displayCurrent(firstOperand);
-})()
-
+// Delete
+deleteButton.addEventListener("click", deleteBtnHandler);
 
 
 function numberBtnHandler(e) {
   let value = e.target.textContent;
   concatOperandAndDisplay(value);
-  // if(pressedEqual) {
-  //   firstOperand = parseFloat(value);
-  //   curOperation = '';
-  //   secondOperand = '';
-  //   calculation = '';
-  //   pressedEqual = false;
-  //   pressedOperator = false;
-  //   clearLast();
-  // }
-
 
 }
 
 
 
 function operationBtnHandler(e) {
-
   if(curOperation !== '' && firstOperand && secondOperand === "" && pressedEqual === false) {
     calculation = "";
     curOperation = e.target.textContent;
@@ -106,13 +91,6 @@ function operationBtnHandler(e) {
     pressedOperator = true;
   }
 
- 
-  
-
- 
-  
-
-  
 
 }
 
@@ -127,8 +105,22 @@ function equalBtnHandler(e) {
   secondOperand = '';
   calculation = '';
   pressedEqual = true;
+  pressedOperator = false;
 
+}
 
+function clearBtnHandler() {
+  setInitValue();
+  displayCurrent(firstOperand);
+}
+
+function deleteBtnHandler() {
+  let currentValue = displayCurrentEl.textContent;
+  firstOperand = String(firstOperand);
+  secondOperand = String(secondOperand);
+  // deleteOneNumber pass true for firstOperand and false for secondOperand
+  if(currentValue === firstOperand) deleteOneNumber(true);
+  if(currentValue === secondOperand) deleteOneNumber(false);
 }
 
 function multiplay(num1, num2) {
@@ -171,18 +163,20 @@ function operator(sign, num1, num2) {
   }
 }
 
+
+
+// function displayCurrentError() {
+//   displayCurrentEl.textContent = "Cannot divide by zero!";
+// }
 function displayCurrent(numberBtn) {
   console.log(`DISPLAYED: ${typeof numberBtn} ${numberBtn}`);
   displayCurrentEl.textContent = numberBtn;
 }
 
-// function displayCurrentError() {
-//   displayCurrentEl.textContent = "Cannot divide by zero!";
-// }
-
 function displayLastTwo(operand, operation) {
   if(!operand || !operation) return;
   calculation += operand + " " + operation + " ";
+  console.log(calculation)
   displayLastEl.textContent = calculation;
   return true;
 }
@@ -196,9 +190,9 @@ function clearLast() {
   displayLastEl.textContent = "";
 }
 
-// function clearCurr() {
-//   displayCurrentEl.textContent = "";
-// }
+function clearCurr() {
+  displayCurrentEl.textContent = "";
+}
 
 function concatOperandAndDisplay(value) {
   if(!pressedOperator) {
@@ -207,6 +201,40 @@ function concatOperandAndDisplay(value) {
   } else if(pressedOperator) {
     secondOperand = parseFloat(secondOperand + value);
     displayCurrent(secondOperand);
+  }
+}
+
+function setInitValue() {
+  firstOperand = "0";
+  curOperation = "";
+  secondOperand = "";
+  pressedOperator = false;
+  pressedEqual = false;
+  result = "";
+  calculation = "";
+  clearLast();
+  clearCurr();
+}
+
+function deleteOneNumber(operand) {
+
+  console.log(operand ? firstOperand.length : secondOperand.length);
+  if(operand ? firstOperand.length > 1 : secondOperand.length > 1) {
+    if(operand) {
+      firstOperand = firstOperand.slice(0, -1);
+    } else {
+      secondOperand = secondOperand.slice(0, -1);
+    }
+    displayCurrent(operand ? firstOperand : secondOperand);
+  } else if(operand ? firstOperand.length === 1 : secondOperand.length === 1) {
+    audio.currentTime = 0;
+    audio.play();
+    if(operand) {
+      firstOperand = '0';
+    } else {
+      secondOperand = '0';
+    }
+    displayCurrent(operand ? firstOperand : secondOperand);
   }
 }
 
