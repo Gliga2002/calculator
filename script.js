@@ -54,6 +54,9 @@ clearButton.addEventListener("click", clearBtnHandler);
 // Delete
 deleteButton.addEventListener("click", deleteBtnHandler);
 
+// Dot
+dotButton.addEventListener('click', dotBtnHandler);
+
 
 
 // Btn Handlers
@@ -98,8 +101,6 @@ function operationBtnHandler(e) {
 }
 
 function equalBtnHandler(e) {
-  resetAfterDivisionByZero();
-  manipulateClass(false);
 
   let equal = e.target.textContent;
   //Check division with 0
@@ -123,19 +124,42 @@ function equalBtnHandler(e) {
 }
 
 function clearBtnHandler() {
-  manipulateClass(false);
-  setInitValue();
-  displayCurrent(firstOperand);
+  clearAll();
 }
 
 function deleteBtnHandler() {
-  if(divideByZero) return;
+  if(divideByZero) {
+    audio.play();
+    return;
+  }
   let currentValue = displayCurrentEl.textContent;
   firstOperand = String(firstOperand);
   secondOperand = String(secondOperand);
   // deleteOneNumber pass true for firstOperand and false for secondOperand
   if(currentValue === firstOperand) deleteOneNumber(true);
   if(currentValue === secondOperand) deleteOneNumber(false);
+}
+
+function dotBtnHandler() {
+  resetAfterDivisionByZero();
+  let currentText = displayCurrentEl.textContent;
+  firstOperand = String(firstOperand);
+  secondOperand = String(secondOperand);
+  if(currentText === firstOperand) {
+    if(firstOperand.split('.').length - 1 === 0) {
+      firstOperand += ".";
+      displayCurrent(firstOperand);
+    } else {
+      return
+    }
+  } else {
+    if(secondOperand.split('.').length - 1 === 0) {
+      secondOperand += ".";
+      displayCurrent(secondOperand);
+    } else {
+      return
+    }
+  }
 }
 
 
@@ -205,9 +229,7 @@ function checkDivisionByZero(secondOperand, curOperation) {
 
 function resetAfterDivisionByZero() {
   if(divideByZero) {
-    setInitValue();
-    displayCurrent(firstOperand);
-    manipulateClass(false);
+    clearAll();
     divideByZero = false;
   }
 }
@@ -220,6 +242,8 @@ function manipulateClass(toggle) {
     });
     equalButton.classList.add('opacity');
     equalButton.setAttribute('disabled','true');
+    dotButton.classList.add('opacity');
+    dotButton.setAttribute('disabled','true');
   } else {
     operationButtons.forEach((operation) => {
       operation.classList.remove('opacity');
@@ -227,9 +251,11 @@ function manipulateClass(toggle) {
     });
     equalButton.classList.remove('opacity');
     equalButton.removeAttribute('disabled');
+    dotButton.classList.remove('opacity');
+    dotButton.removeAttribute('disabled');
   }
- 
 }
+
 
 // Displaying
 
@@ -260,6 +286,12 @@ function clearLast() {
 
 function clearCurr() {
   displayCurrentEl.textContent = "";
+}
+
+function clearAll() {
+  setInitValue();
+  displayCurrent(firstOperand);
+  manipulateClass(false);
 }
 
 
