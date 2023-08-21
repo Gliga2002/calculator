@@ -63,7 +63,7 @@ calculator.addEventListener('click', function(e) {
   console.log('Clicked button');
   const clickedBtn = e.target.closest('.btn-cl')
   if(!clickedBtn) return;
-  clickedBtn.style.boxShadow = "4px 2px 2px gray";
+  clickedBtn.style.boxShadow = "2px 1px 1px gray";
   setTimeout(()=> {
     clickedBtn.removeAttribute("style");
   }, 200)
