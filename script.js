@@ -12,6 +12,7 @@ let divideByZero = false;
 // Selecting Node elements
 const displayLastEl = document.querySelector(".display-last");
 const displayCurrentEl = document.querySelector(".display-current");
+const calculator = document.querySelector('.calculator');
 
 // IIFE
 (function() {
@@ -54,10 +55,19 @@ clearButton.addEventListener("click", clearBtnHandler);
 // Delete
 deleteButton.addEventListener("click", deleteBtnHandler);
 
+
 // Dot
 dotButton.addEventListener('click', dotBtnHandler);
 
-
+calculator.addEventListener('click', function(e) {
+  console.log('Clicked button');
+  const clickedBtn = e.target.closest('.btn-cl')
+  if(!clickedBtn) return;
+  clickedBtn.style.boxShadow = "4px 2px 2px gray";
+  setTimeout(()=> {
+    clickedBtn.removeAttribute("style");
+  }, 200)
+})
 
 // Btn Handlers
 
