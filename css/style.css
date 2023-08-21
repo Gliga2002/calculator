@@ -36,6 +36,7 @@ main {
 }
 
 .btn-cl {
+  transition: all 0.3s;
   padding:2rem;
   border-radius:0.5rem;
   background-color: #eee;
